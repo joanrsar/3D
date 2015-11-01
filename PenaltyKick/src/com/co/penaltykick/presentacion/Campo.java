@@ -43,16 +43,18 @@ public class Campo  extends SimpleApplication  implements AnimEventListener {
     Balon   balon       = new Balon();
     
     private AnimChannel channel;
-    private AnimControl control;
-    Geometry    player;
+    private AnimControl controlJugador;
+    Geometry    arco;
+    Node        jugador;
     
     @Override
     public void simpleInitApp() {
         flyCam.setMoveSpeed(50);
-        
+        viewPort.setBackgroundColor(ColorRGBA.LightGray);
         initKeys();
-      //  cam.setLocation(Vector3f.UNIT_XYZ);
-       // cam.setFrustum( 0, 150, 150, 150, 150, 150 );
+       /* cam.getLocation().setX(-5);
+        cam.getLocation().setY(-20);
+        cam.getLocation().setX(30);*/
         
         material = new Material(assetManager, 
             "Common/MatDefs/Terrain/Terrain.j3md");      
@@ -74,7 +76,7 @@ public class Campo  extends SimpleApplication  implements AnimEventListener {
         TerrainLodControl control = new TerrainLodControl(terreno, getCamera());
         terreno.addControl(control);
         
-        /*Sphere sphereMesh = new Sphere(16, 16, 2f);
+        Sphere sphereMesh = new Sphere(16, 16, 2f);
         Geometry sphereGeo = new Geometry("Shiny rock", sphereMesh);
         sphereMesh.setTextureMode(Sphere.TextureMode.Projected); // better quality on spheres
         TangentBinormalGenerator.generate(sphereMesh);  
@@ -89,7 +91,7 @@ public class Campo  extends SimpleApplication  implements AnimEventListener {
         sphereMat.setColor("Specular", ColorRGBA.White);
         sphereMat.setFloat("Shininess", 64f);  // [0,128]
         sphereGeo.setMaterial(sphereMat);
-        sphereGeo.setLocalTranslation(0, -3, 1); // Move it a bit
+        sphereGeo.setLocalTranslation(0, -10, 1); // Move it a bit
         sphereGeo.rotate(1.2f, 0, 0);          // Rotate it a bit
         
         rootNode.attachChild(sphereGeo);
@@ -99,21 +101,29 @@ public class Campo  extends SimpleApplication  implements AnimEventListener {
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(1, 0, -2).normalizeLocal());
         sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun);*/
+        rootNode.addLight(sun);
         
-        Box b = new Box(1, 1, 0);
-        player = new Geometry("blue cube", b);
+        Box b = new Box(-3, 1, 0);
+        arco = new Geometry("blue cube", b);
         Material mat = new Material(assetManager,
           "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
-        player.setMaterial(mat);
-        rootNode.attachChild(player);
+        mat.setTexture("ColorMap",
+                assetManager.loadTexture("Textures/red.jpg"));
+        arco.setLocalTranslation(0, -1, 20);
+        arco.setMaterial(mat);
+        rootNode.attachChild(arco);
 
+        DirectionalLight dl = new DirectionalLight();
+        dl.setDirection(new Vector3f(-0.1f, -1f, -1).normalizeLocal());
+        rootNode.addLight(dl);
+        jugador = (Node) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
+        jugador.setLocalScale(0.5f);
+        rootNode.attachChild(jugador);
+        controlJugador = jugador .getControl(AnimControl.class);
+        controlJugador.addListener(this);
+        channel = controlJugador.createChannel();
+        channel.setAnim("stand");
         
-        /*control = player.getControl(AnimControl.class);
-        control.addListener(this);
-        channel = control.createChannel();
-        channel.setAnim("stand");*/
         
     }
     
